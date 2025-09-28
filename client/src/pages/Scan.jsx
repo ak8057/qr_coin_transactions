@@ -50,10 +50,35 @@ export default function Scan() {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl mb-4">Scan QR</h2>
-      <video ref={videoRef} className="w-full max-w-md border rounded" />
-      <p className="mt-4">{msg}</p>
+    <div className="p-6 flex justify-center">
+      <div className="w-full max-w-lg bg-white p-6 rounded-2xl shadow-lg text-center">
+        {/* Header */}
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center justify-center gap-2">
+          <span className="text-blue-600">📷</span> Scan QR
+        </h2>
+
+        {/* Camera Frame */}
+        <div className="relative border-4 border-dashed border-blue-400 rounded-xl overflow-hidden">
+          <video ref={videoRef} className="w-full max-h-72 object-cover" />
+
+          {/* Overlay effect */}
+          <div className="absolute inset-0 border-2 border-blue-600 rounded-lg pointer-events-none animate-pulse" />
+        </div>
+
+        {/* Status / Message */}
+        <p
+          className={`mt-6 text-lg font-medium ${
+            msg.includes("Success")
+              ? "text-green-600"
+              : msg.includes("error")
+              ? "text-red-600"
+              : "text-gray-600"
+          }`}
+        >
+          {msg || "Align the QR code within the frame"}
+        </p>
+      </div>
     </div>
   );
+
 }
