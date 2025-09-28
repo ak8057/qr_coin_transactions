@@ -1,15 +1,25 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
 import API from "../api";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Scan() {
   const videoRef = useRef(null);
   const [msg, setMsg] = useState("");
   const codeReaderRef = useRef(null);
+  const { isLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
     const codeReader = new BrowserMultiFormatReader();
     codeReaderRef.current = codeReader;
+
     codeReader
       .decodeFromVideoDevice(null, videoRef.current, (result, err) => {
         if (result) {
@@ -25,7 +35,7 @@ export default function Scan() {
     return () => {
       if (codeReaderRef.current) codeReaderRef.current.reset();
     };
-  }, []);
+  }, [isLoggedIn, navigate]);
 
   async function handleScanned(qrText) {
     setMsg("Verifying QR...");

@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // import context
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const nav = useNavigate();
+  const { login } = useContext(AuthContext); // get login function from context
+  const navigate = useNavigate();
 
   async function onSubmit(e) {
     e.preventDefault();
     try {
-      const r = await API.post("/auth/register", { email, password });
-      localStorage.setItem("token", r.data.token);
-      nav("/wallet");
+      const response = await API.post("/auth/register", { email, password });
+
+      const token = response.data.token;
+      const username = response.data.username || email; // fallback to email if username not returned
+
+      // Use context login to update state globally
+      login(token, username);
+
+      // Redirect after registration
+      navigate("/wallet");
     } catch (err) {
       alert(err.response?.data?.error || err.message);
     }
